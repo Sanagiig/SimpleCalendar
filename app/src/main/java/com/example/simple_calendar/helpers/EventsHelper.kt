@@ -506,94 +506,94 @@ class EventsHelper(val context: Context) {
     private fun getEventsRepeatingXTimes(fromTS: Long, toTS: Long, startTimes: LongSparseArray<Long>, event: Event): ArrayList<Event> {
         val original = event.copy()
         val events = ArrayList<Event>()
-        while (event.repeatLimit < 0 && event.startTS <= toTS) {
-            if (event.repeatInterval.isXWeeklyRepetition()) {
-                if (event.startTS.isTsOnProperDay(event)) {
-                    if (event.isOnProperWeek(startTimes)) {
-                        if (event.endTS >= fromTS) {
-                            event.copy().apply {
-                                updateIsPastEvent()
-                                color = event.color
-                                events.add(this)
-                            }
-                        }
-                        event.repeatLimit++
-                    }
-                }
-            } else {
-                if (event.endTS >= fromTS) {
-                    event.copy().apply {
-                        updateIsPastEvent()
-                        color = event.color
-                        events.add(this)
-                    }
-                } else if (event.getIsAllDay()) {
-                    val dayCode = Formatter.getDayCodeFromTS(fromTS)
-                    val endDayCode = Formatter.getDayCodeFromTS(event.endTS)
-                    if (dayCode == endDayCode) {
-                        event.copy().apply {
-                            updateIsPastEvent()
-                            color = event.color
-                            events.add(this)
-                        }
-                    }
-                }
-                event.repeatLimit++
-            }
-            event.addIntervalTime(original)
-        }
+//        while (event.repeatLimit < 0 && event.startTS <= toTS) {
+//            if (event.repeatInterval.isXWeeklyRepetition()) {
+//                if (event.startTS.isTsOnProperDay(event)) {
+//                    if (event.isOnProperWeek(startTimes)) {
+//                        if (event.endTS >= fromTS) {
+//                            event.copy().apply {
+//                                updateIsPastEvent()
+//                                color = event.color
+//                                events.add(this)
+//                            }
+//                        }
+//                        event.repeatLimit++
+//                    }
+//                }
+//            } else {
+//                if (event.endTS >= fromTS) {
+//                    event.copy().apply {
+//                        updateIsPastEvent()
+//                        color = event.color
+//                        events.add(this)
+//                    }
+//                } else if (event.getIsAllDay()) {
+//                    val dayCode = Formatter.getDayCodeFromTS(fromTS)
+//                    val endDayCode = Formatter.getDayCodeFromTS(event.endTS)
+//                    if (dayCode == endDayCode) {
+//                        event.copy().apply {
+//                            updateIsPastEvent()
+//                            color = event.color
+//                            events.add(this)
+//                        }
+//                    }
+//                }
+//                event.repeatLimit++
+//            }
+//            event.addIntervalTime(original)
+//        }
         return events
     }
 
     private fun getEventsRepeatingTillDateOrForever(fromTS: Long, toTS: Long, startTimes: LongSparseArray<Long>, event: Event): ArrayList<Event> {
         val original = event.copy()
         val events = ArrayList<Event>()
-        while (event.startTS <= toTS && (event.repeatLimit == 0L || event.repeatLimit >= event.startTS)) {
-            if (event.endTS >= fromTS) {
-                if (event.repeatInterval.isXWeeklyRepetition()) {
-                    if (event.startTS.isTsOnProperDay(event)) {
-                        if (event.isOnProperWeek(startTimes)) {
-                            event.copy().apply {
-                                updateIsPastEvent()
-                                color = event.color
-                                events.add(this)
-                            }
-                        }
-                    }
-                } else {
-                    event.copy().apply {
-                        updateIsPastEvent()
-                        color = event.color
-                        events.add(this)
-                    }
-                }
-            }
-
-            if (event.getIsAllDay()) {
-                if (event.repeatInterval.isXWeeklyRepetition()) {
-                    if (event.endTS >= toTS && event.startTS.isTsOnProperDay(event)) {
-                        if (event.isOnProperWeek(startTimes)) {
-                            event.copy().apply {
-                                updateIsPastEvent()
-                                color = event.color
-                                events.add(this)
-                            }
-                        }
-                    }
-                } else {
-                    val dayCode = Formatter.getDayCodeFromTS(fromTS)
-                    val endDayCode = Formatter.getDayCodeFromTS(event.endTS)
-                    if (dayCode == endDayCode) {
-                        event.copy().apply {
-                            updateIsPastEvent()
-                            color = event.color
-                            events.add(this)
-                        }
-                    }
-                }
-            }
-            event.addIntervalTime(original)
-        }
+//        while (event.startTS <= toTS && (event.repeatLimit == 0L || event.repeatLimit >= event.startTS)) {
+//            if (event.endTS >= fromTS) {
+//                if (event.repeatInterval.isXWeeklyRepetition()) {
+//                    if (event.startTS.isTsOnProperDay(event)) {
+//                        if (event.isOnProperWeek(startTimes)) {
+//                            event.copy().apply {
+//                                updateIsPastEvent()
+//                                color = event.color
+//                                events.add(this)
+//                            }
+//                        }
+//                    }
+//                } else {
+//                    event.copy().apply {
+//                        updateIsPastEvent()
+//                        color = event.color
+//                        events.add(this)
+//                    }
+//                }
+//            }
+//
+//            if (event.getIsAllDay()) {
+//                if (event.repeatInterval.isXWeeklyRepetition()) {
+//                    if (event.endTS >= toTS && event.startTS.isTsOnProperDay(event)) {
+//                        if (event.isOnProperWeek(startTimes)) {
+//                            event.copy().apply {
+//                                updateIsPastEvent()
+//                                color = event.color
+//                                events.add(this)
+//                            }
+//                        }
+//                    }
+//                } else {
+//                    val dayCode = Formatter.getDayCodeFromTS(fromTS)
+//                    val endDayCode = Formatter.getDayCodeFromTS(event.endTS)
+//                    if (dayCode == endDayCode) {
+//                        event.copy().apply {
+//                            updateIsPastEvent()
+//                            color = event.color
+//                            events.add(this)
+//                        }
+//                    }
+//                }
+//            }
+//            event.addIntervalTime(original)
+//        }
         return events
     }
 
@@ -605,10 +605,10 @@ class EventsHelper(val context: Context) {
     fun getRunningEventsOrTasks(): List<Event> {
         val ts = getNowSeconds()
         val events = eventsDB.getOneTimeEventsOrTasksFromTo(ts, ts).toMutableList() as ArrayList<Event>
-        events.addAll(getRepeatableEventsFor(ts, ts))
-        events.forEach {
-            if (it.isTask()) updateIsTaskCompleted(it)
-        }
+//        events.addAll(getRepeatableEventsFor(ts, ts))
+//        events.forEach {
+//            if (it.isTask()) updateIsTaskCompleted(it)
+//        }
         return events
     }
 

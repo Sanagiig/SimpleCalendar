@@ -13,6 +13,12 @@ base {
     archivesName.set("calendar")
 }
 
+configurations.all {
+    resolutionStrategy.force("org.jetbrains.kotlin:kotlin-stdlib:1.9.24")
+    resolutionStrategy.force("org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.9.24")
+    resolutionStrategy.force("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.9.24")
+}
+
 android {
     namespace = "com.example.simple_calendar"
     compileSdk = 35

@@ -1,6 +1,7 @@
 package com.example.simple_calendar.activities
 
 import android.os.Bundle
+import android.view.MenuItem
 import android.widget.Toast
 
 import com.example.simple_calendar.BuildConfig
@@ -10,12 +11,15 @@ import com.example.simple_calendar.databinding.ActivityMainBinding
 import com.example.simple_calendar.dialogs.SelectEventTypesDialog
 import com.example.simple_calendar.extensions.config
 import com.example.simple_calendar.extensions.eventsHelper
+import com.example.simple_calendar.extensions.getFirstDayOfWeek
 import com.example.simple_calendar.extensions.updateWidgets
 import com.example.simple_calendar.fragments.*
 import com.example.simple_calendar.helpers.*
+import com.example.simple_calendar.helpers.Formatter
 import com.example.simple_calendar.models.*
 import com.simplemobiletools.commons.dialogs.RadioGroupDialog
 import com.simplemobiletools.commons.extensions.appLaunched
+import com.simplemobiletools.commons.extensions.beVisibleIf
 import com.simplemobiletools.commons.extensions.fadeOut
 import com.simplemobiletools.commons.extensions.getColoredDrawableWithColor
 import com.simplemobiletools.commons.extensions.getProperPrimaryColor
@@ -26,12 +30,17 @@ import com.simplemobiletools.commons.models.RadioItem
 import org.joda.time.DateTime
 import java.util.ArrayList
 import java.util.ConcurrentModificationException
-import java.util.Formatter
+
 
 class MainActivity : SimpleActivity(), RefreshRecyclerViewListener {
 
     private val binding by viewBinding(ActivityMainBinding::inflate)
     private var currentFragments = ArrayList<MyFragmentHolder>()
+
+    private var goToTodayButton: MenuItem? = null
+
+    private var shouldGoToTodayBeVisible = false
+    private var mShouldFilterBeVisible = false
 
     // search results have endless scrolling, so reaching the top/bottom fetches further results
     private var minFetchedSearchTS = 0L
@@ -44,10 +53,31 @@ class MainActivity : SimpleActivity(), RefreshRecyclerViewListener {
         setContentView(binding.root)
         appLaunched(BuildConfig.APPLICATION_ID)
         setupOptionsMenu()
+        refreshMenuItems()
+        updateMaterialActivityViews(binding.mainCoordinator, binding.mainHolder, useTransparentNavigation = false, useTopSearchMenu = true)
+
+        binding.calendarFab.beVisibleIf(config.storedView != YEARLY_VIEW && config.storedView != WEEKLY_VIEW)
     }
 
     override fun refreshItems() {
         TODO("Not yet implemented")
+    }
+
+    fun refreshMenuItems() {
+        if (binding.fabExtendedOverlay.isVisible()) {
+            hideExtendedFab()
+        }
+
+        shouldGoToTodayBeVisible = currentFragments.lastOrNull()?.shouldGoToTodayBeVisible() ?: false
+        binding.mainMenu.getToolbar().menu.apply {
+            goToTodayButton = findItem(R.id.go_to_today)
+            findItem(R.id.print).isVisible = config.storedView != MONTHLY_DAILY_VIEW
+            findItem(R.id.filter).isVisible = mShouldFilterBeVisible
+            findItem(R.id.go_to_today).isVisible = shouldGoToTodayBeVisible && !binding.mainMenu.isSearchOpen
+            findItem(R.id.go_to_date).isVisible = config.storedView != EVENTS_LIST_VIEW
+            findItem(R.id.refresh_caldav_calendars).isVisible = config.caldavSync
+            findItem(R.id.more_apps_from_us).isVisible = !resources.getBoolean(com.simplemobiletools.commons.R.bool.hide_google_relations)
+        }
     }
 
     private fun setupOptionsMenu() = binding.apply {
@@ -87,6 +117,40 @@ class MainActivity : SimpleActivity(), RefreshRecyclerViewListener {
 
     }
 
+    private fun checkSwipeRefreshAvailability() {
+        binding.swipeRefreshLayout.isEnabled = config.caldavSync && config.pullToRefresh && config.storedView != WEEKLY_VIEW
+        if (!binding.swipeRefreshLayout.isEnabled) {
+            binding.swipeRefreshLayout.isRefreshing = false
+        }
+    }
+
+    private fun getDateCodeToDisplay(newView: Int): String? {
+        val fragment = currentFragments.last()
+        val currentView = fragment.viewType
+        if (newView == EVENTS_LIST_VIEW || currentView == EVENTS_LIST_VIEW) {
+            return null
+        }
+
+        val fragmentDate = fragment.getCurrentDate()
+        val viewOrder = arrayListOf(DAILY_VIEW, WEEKLY_VIEW, MONTHLY_VIEW, YEARLY_VIEW)
+        val currentViewIndex = viewOrder.indexOf(if (currentView == MONTHLY_DAILY_VIEW) MONTHLY_VIEW else currentView)
+        val newViewIndex = viewOrder.indexOf(if (newView == MONTHLY_DAILY_VIEW) MONTHLY_VIEW else newView)
+
+        return if (fragmentDate != null && currentViewIndex <= newViewIndex) {
+            getDateCodeFormatForView(newView, fragmentDate)
+        } else {
+            getDateCodeFormatForView(newView, DateTime())
+        }
+    }
+
+    private fun getDateCodeFormatForView(view: Int, date: DateTime): String {
+        return when (view) {
+            WEEKLY_VIEW -> getFirstDayOfWeek(date)
+            YEARLY_VIEW -> date.toString()
+            else -> Formatter.getDayCodeFromDateTime(date)
+        }
+    }
+
     private fun getFragmentsHolder() = when (config.storedView) {
         DAILY_VIEW -> DayFragmentsHolder()
         MONTHLY_VIEW -> MonthFragmentsHolder()
@@ -114,6 +178,18 @@ class MainActivity : SimpleActivity(), RefreshRecyclerViewListener {
             resetActionBarTitle()
             closeSearch()
             updateView(it as Int)
+            shouldGoToTodayBeVisible = false
+            refreshMenuItems()
+        }
+    }
+
+    private fun updateView(view: Int) {
+        binding.calendarFab.beVisibleIf(view != YEARLY_VIEW && view != WEEKLY_VIEW)
+        val dateCode = getDateCodeToDisplay(view)
+        config.storedView = view
+        checkSwipeRefreshAvailability()
+        updateViewPager(dateCode)
+        if (goToTodayButton?.isVisible == true) {
             shouldGoToTodayBeVisible = false
             refreshMenuItems()
         }
@@ -180,6 +256,13 @@ class MainActivity : SimpleActivity(), RefreshRecyclerViewListener {
         fragment.arguments = bundle
         supportFragmentManager.beginTransaction().add(R.id.fragments_holder, fragment).commitNow()
         binding.mainMenu.toggleForceArrowBackIcon(false)
+    }
+
+    private fun fixDayCode(dayCode: String? = null): String? = when {
+        config.storedView == WEEKLY_VIEW && (dayCode?.length == Formatter.DAYCODE_PATTERN.length) -> getFirstDayOfWeek(
+            Formatter.getDateTimeFromCode(dayCode))
+        config.storedView == YEARLY_VIEW && (dayCode?.length == Formatter.DAYCODE_PATTERN.length) -> Formatter.getYearFromDayCode(dayCode)
+        else -> dayCode
     }
 
     private fun refreshViewPager() {

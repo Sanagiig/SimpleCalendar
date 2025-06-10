@@ -14,25 +14,25 @@ class SelectEventTypesDialog(val activity: SimpleActivity, selectedEventTypes: S
 
     init {
         activity.eventsHelper.getEventTypes(activity, false) {
-            binding.filterEventTypesList.adapter = FilterEventTypeAdapter(activity, it, selectedEventTypes)
-
-            activity.getAlertDialogBuilder()
-                .setPositiveButton(com.simplemobiletools.commons.R.string.ok) { _, _ -> confirmEventTypes() }
-                .setNegativeButton(com.simplemobiletools.commons.R.string.cancel, null)
-                .apply {
-                    activity.setupDialogStuff(binding.root, this) { alertDialog ->
-                        dialog = alertDialog
-                    }
-                }
+//            binding.filterEventTypesList.adapter = FilterEventTypeAdapter(activity, it, selectedEventTypes)
+//
+//            activity.getAlertDialogBuilder()
+//                .setPositiveButton(com.simplemobiletools.commons.R.string.ok) { _, _ -> confirmEventTypes() }
+//                .setNegativeButton(com.simplemobiletools.commons.R.string.cancel, null)
+//                .apply {
+//                    activity.setupDialogStuff(binding.root, this) { alertDialog ->
+//                        dialog = alertDialog
+//                    }
+//                }
         }
     }
 
     private fun confirmEventTypes() {
-        val adapter = binding.filterEventTypesList.adapter as FilterEventTypeAdapter
-        val selectedItems = adapter.getSelectedItemsList()
-            .map { it.toString() }
-            .toHashSet()
-        callback(selectedItems)
-        dialog?.dismiss()
+//        val adapter = binding.filterEventTypesList.adapter as FilterEventTypeAdapter
+//        val selectedItems = adapter.getSelectedItemsList()
+//            .map { it.toString() }
+//            .toHashSet()
+//        callback(selectedItems)
+//        dialog?.dismiss()
     }
 }

@@ -4,7 +4,11 @@ import androidx.fragment.app.Fragment
 import com.example.simple_calendar.interfaces.NavigationListener
 import org.joda.time.DateTime
 
-class WeekFragmentsHolder(override val viewType: Int) :  MyFragmentHolder(), NavigationListener {
+class WeekFragmentsHolder:  MyFragmentHolder(), NavigationListener {
+
+    override val viewType: Int
+        get() = TODO("Not yet implemented")
+
     override fun goToToday() {
         TODO("Not yet implemented")
     }

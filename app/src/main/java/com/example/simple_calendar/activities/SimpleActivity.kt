@@ -6,6 +6,8 @@ import android.os.Handler
 import android.provider.CalendarContract
 import androidx.core.app.NotificationManagerCompat
 import com.example.simple_calendar.R
+import com.example.simple_calendar.extensions.config
+import com.example.simple_calendar.extensions.refreshCalDAVCalendars
 
 import com.simplemobiletools.commons.activities.BaseSimpleActivity
 import com.simplemobiletools.commons.dialogs.ConfirmationDialog
@@ -48,7 +50,7 @@ open class SimpleActivity : BaseSimpleActivity() {
             val uri = CalendarContract.Calendars.CONTENT_URI
             contentResolver.unregisterContentObserver(calDAVSyncObserver)
             contentResolver.registerContentObserver(uri, false, calDAVSyncObserver)
-//            refreshCalDAVCalendars(config.caldavSyncedCalendarIds, true)
+            refreshCalDAVCalendars(config.caldavSyncedCalendarIds, true)
         }
     }
 
@@ -89,11 +91,9 @@ open class SimpleActivity : BaseSimpleActivity() {
                     }
                 }
             } else {
-                PermissionRequiredDialog(
-                    this,
-                    com.simplemobiletools.commons.R.string.allow_notifications_reminders,
-                    { openNotificationSettings() })
+                PermissionRequiredDialog(this, com.simplemobiletools.commons.R.string.allow_notifications_reminders, { openNotificationSettings() })
             }
         }
     }
 }
+

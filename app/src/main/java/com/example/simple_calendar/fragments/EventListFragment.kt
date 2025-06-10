@@ -2,9 +2,13 @@ package com.example.simple_calendar.fragments
 
 import androidx.fragment.app.Fragment
 import com.example.simple_calendar.interfaces.NavigationListener
+import com.simplemobiletools.commons.interfaces.RefreshRecyclerViewListener
 import org.joda.time.DateTime
 
-class EventListFragment(override val viewType: Int) :  MyFragmentHolder(), NavigationListener {
+class EventListFragment :  MyFragmentHolder(), RefreshRecyclerViewListener {
+    override val viewType: Int
+        get() = TODO("Not yet implemented")
+
     override fun goToToday() {
         TODO("Not yet implemented")
     }
@@ -33,15 +37,7 @@ class EventListFragment(override val viewType: Int) :  MyFragmentHolder(), Navig
         TODO("Not yet implemented")
     }
 
-    override fun goLeft() {
-        TODO("Not yet implemented")
-    }
-
-    override fun goRight() {
-        TODO("Not yet implemented")
-    }
-
-    override fun goToDateTime(dateTime: DateTime) {
+    override fun refreshItems() {
         TODO("Not yet implemented")
     }
 }

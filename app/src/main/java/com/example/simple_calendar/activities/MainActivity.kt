@@ -95,8 +95,8 @@ class MainActivity : SimpleActivity(), RefreshRecyclerViewListener {
             }
 
             when (menuItem.itemId) {
-                R.id.change_view -> showViewDialog()
                 R.id.go_to_today -> goToToday()
+                R.id.change_view -> showViewDialog()
                 R.id.go_to_date -> showGoToDateDialog()
                 R.id.print -> printView()
                 R.id.filter -> showFilterDialog()
